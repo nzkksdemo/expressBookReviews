@@ -100,22 +100,40 @@ public_users.get('/author/:author',function (req, res) {
     }
 });
 
+const getBookByTitle = title => {
+    return new Promise((resolve, reject) => {
+        getAllBooks().then(result => {
+            const arrayOfISBNKeys = Object.keys(result);
+            let selectedBooks = {};
+
+            arrayOfISBNKeys.forEach(item => {
+                if (result[item].title === title) {
+                    selectedBooks[item] = result[item];
+                }
+            });
+
+            if (Object.keys(selectedBooks).length > 0) {
+                resolve(selectedBooks);
+            } else {
+                reject(`Unable to find any books based by the title called '${title}'`);
+            }
+        });
+    });
+};
+
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
-    const givenTitle = req.params.title;
-    const arrayOfISBNKeys = Object.keys(books);
-    let selectedBooks = {};
+    const title = req.params.title;
 
-    arrayOfISBNKeys.forEach(item => {
-        if (books[item].title === givenTitle) {
-            selectedBooks[item] = books[item];
-        }
-    });
-
-    if (Object.keys(selectedBooks).length > 0) {
-        return res.send(JSON.stringify(selectedBooks, null, 4));
+    if (title) {
+        getBookByTitle(title)
+        .then(
+            value => res.status(200).send(JSON.stringify(value, null, 4)),
+            reason => res.status(303).json({message: reason})
+        );
     } else {
-        return res.status(300).json({message: `Unable to find any books based by the title called '${givenTitle}'`});
+        // to get below error message change the path above to '/title/:title?'
+        res.status(303).json({message: 'title is required'});
     }
 });
 
