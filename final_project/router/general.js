@@ -142,11 +142,14 @@ public_users.get('/review/:isbn',function (req, res) {
     const givenISBN = req.params.isbn;
     const selectedBookReviews = books[givenISBN].reviews;
 
-    if (Object.keys(selectedBookReviews).length > 0) {
-        return res.send(JSON.stringify(selectedBookReviews));
-    } else {
-        return res.status(300).json({message: `There are no reviews yet for the book with ISBN '${givenISBN}' titled '${books[givenISBN].title}'`});
-    }
+    // if (Object.keys(selectedBookReviews).length > 0) {
+    //     return res.send(JSON.stringify(selectedBookReviews));
+    // } else {
+    //     return res.status(300).json({message: `There are no reviews yet for the book with ISBN '${givenISBN}' titled '${books[givenISBN].title}'`});
+    // }
+    
+    // since the submission asks for showing an empty object ...
+    return res.send(JSON.stringify(selectedBookReviews));
 });
 
 module.exports.general = public_users;
