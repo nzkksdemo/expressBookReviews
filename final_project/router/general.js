@@ -28,9 +28,11 @@ public_users.post("/register", (req,res) => {
     return res.status(404).json({ message: 'Unable to register user.' });
 });
 
+const getAllBooks = () => new Promise((resolve, reject) => resolve(books));
+
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-    return res.send(JSON.stringify(books, null, 4));
+    getAllBooks().then(books => res.send(JSON.stringify(books, null, 4)));
 });
 
 // Get book details based on ISBN
