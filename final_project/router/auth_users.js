@@ -5,8 +5,9 @@ const regd_users = express.Router();
 
 let users = [];
 
-const isValid = (username)=>{ //returns boolean
-//write code to check is the username is valid
+const isValid = username =>{
+    const isValidUser = users.filter(user => user.username === username);
+    return isValidUser.length > 0;
 }
 
 const authenticatedUser = (username,password)=>{
@@ -77,7 +78,7 @@ regd_users.delete('/auth/review/:isbn', (req, res) => {
         if(!selectedBook) {
             return res.status(404).json({message: `Book not found with the isbn '${isbn}'`})
         }
-        
+
         const isUserReviewExists = selectedBook.reviews[username];
 
         if (isUserReviewExists) {
