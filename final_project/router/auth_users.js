@@ -29,7 +29,7 @@ regd_users.post("/login", (req,res) => {
     if (!username || !password) {
         return res.status(300).json({message: 'Both Username and Password is required'});
     }
-    
+
     if (authenticatedUser(username, password)) {
         let accessToken = jwt.sign({ data: password }, 'access', { expiresIn: 60 * 60 });
     
@@ -46,8 +46,24 @@ regd_users.post("/login", (req,res) => {
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+    const username = req.session.authorization.username;
+    const isbn = req.params.isbn;
+    const review = req.query.review;
+
+    if (isbn && review) {
+        const selectedBook = books[isbn];
+
+        if(!selectedBook) {
+            return res.status(404).json({message: `Book not found with the isbn '${isbn}'`})
+        }
+
+        const isUserReviewExists = selectedBook.reviews[username];
+        selectedBook.reviews[username] = review;
+
+        return res.status(200).json({message: `${isUserReviewExists ? 'Updated' : 'Added'} the review`});
+    } else {
+        return res.status(303).json({message: "Both ISBN and Review is required"});
+    }
 });
 
 module.exports.authenticated = regd_users;
