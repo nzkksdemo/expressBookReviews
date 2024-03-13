@@ -28,16 +28,16 @@ public_users.post("/register", (req,res) => {
     return res.status(404).json({ message: 'Unable to register user.' });
 });
 
-const getAllBooks = () => new Promise((resolve, reject) => resolve(books));
+const getAllBooks = async () => await new Promise((resolve, reject) => resolve(books));
 
 // Get the book list available in the shop
-public_users.get('/',function (req, res) {
+public_users.get('/', function (req, res) {
     getAllBooks().then(result => res.status(200).send(JSON.stringify(result, null, 4)));
 });
 
-const getBookByIsbn = isbn => {
-    return new Promise((resolve, reject) => {
-        getAllBooks().then(result => {
+const getBookByIsbn = async isbn => {
+    await new Promise((resolve, reject) => {
+        return getAllBooks().then(result => {
             const selectedBook = result[isbn];
             if(selectedBook) {
                 resolve(selectedBook);
@@ -63,9 +63,9 @@ public_users.get('/isbn/:isbn', function (req, res) {
     }
  });
 
-const getBookByAuthor = author => {
-    return new Promise((resolve, reject) => {
-        getAllBooks().then(result => {
+const getBookByAuthor = async author => {
+    await new Promise((resolve, reject) => {
+        return getAllBooks().then(result => {
             let selectedBooks = {};
             const arrayOfISBNKeys = Object.keys(result);
 
@@ -100,9 +100,9 @@ public_users.get('/author/:author',function (req, res) {
     }
 });
 
-const getBookByTitle = title => {
-    return new Promise((resolve, reject) => {
-        getAllBooks().then(result => {
+const getBookByTitle = async title => {
+    await new Promise((resolve, reject) => {
+        return getAllBooks().then(result => {
             const arrayOfISBNKeys = Object.keys(result);
             let selectedBooks = {};
 
