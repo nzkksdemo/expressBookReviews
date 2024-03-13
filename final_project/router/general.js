@@ -62,23 +62,41 @@ public_users.get('/isbn/:isbn', function (req, res) {
         res.status(303).json({message: 'isbn is required'});
     }
  });
+
+const getBookByAuthor = author => {
+    return new Promise((resolve, reject) => {
+        getAllBooks().then(result => {
+            let selectedBooks = {};
+            const arrayOfISBNKeys = Object.keys(result);
+
+            arrayOfISBNKeys.forEach(item => {
+                if (result[item].author === author) {
+                    selectedBooks[item] = result[item];
+                }
+            });
+
+            if (Object.keys(selectedBooks).length > 0) {
+                resolve(selectedBooks);
+            } else {
+                reject(`Unable to find any books by author named '${author}'`)
+            }
+        });
+    });
+};
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
-    const givenAuthor = req.params.author;
-    const arrayOfISBNKeys = Object.keys(books);
-    let selectedBooks = {};
+    const author = req.params.author;
 
-    arrayOfISBNKeys.forEach(item => {
-        if (books[item].author === givenAuthor) {
-            selectedBooks[item] = books[item];
-        }
-    });
-
-    if (Object.keys(selectedBooks).length > 0) {
-        return res.send(JSON.stringify(selectedBooks, null, 4));
+    if (author) {
+        getBookByAuthor(author)
+        .then(
+            value => res.status(200).send(JSON.stringify(value, null, 4)),
+            reason => res.status(303).json({message: reason})
+        );
     } else {
-        return res.status(300).json({message: `Unable to find any books by author named '${givenAuthor}'`})
+        // to get below error message change the path above to '/author/:author?'
+        res.status(303).json({message: 'author is required'});
     }
 });
 
