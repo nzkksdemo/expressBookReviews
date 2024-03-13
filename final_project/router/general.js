@@ -52,16 +52,22 @@ public_users.get('/title/:title',function (req, res) {
     });
 
     if (Object.keys(selectedBooks).length > 0) {
-        res.send(JSON.stringify(selectedBooks, null, 4));
+        return res.send(JSON.stringify(selectedBooks, null, 4));
     } else {
-        res.status(300).json({message: `Unable to find any books based by the title called '${givenTitle}'`});
+        return res.status(300).json({message: `Unable to find any books based by the title called '${givenTitle}'`});
     }
 });
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+    const givenISBN = req.params.isbn;
+    const selectedBookReviews = books[givenISBN].reviews;
+
+    if (Object.keys(selectedBookReviews).length > 0) {
+        return res.send(JSON.stringify(selectedBookReviews));
+    } else {
+        return res.status(300).json({message: `There are no reviews yet for the book with ISBN '${givenISBN}' titled '${books[givenISBN].title}'`});
+    }
 });
 
 module.exports.general = public_users;
