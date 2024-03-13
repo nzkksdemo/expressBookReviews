@@ -22,19 +22,20 @@ public_users.get('/isbn/:isbn',function (req, res) {
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
+    const givenAuthor = req.params.author;
     const arrayOfISBNKeys = Object.keys(books);
-    let selectedBooks = [];
+    let selectedBooks = {};
 
     arrayOfISBNKeys.forEach(item => {
-        if (books[item].author === req.params.author) {
-            selectedBooks.push(books[item]);
+        if (books[item].author === givenAuthor) {
+            selectedBooks[item] = books[item];
         }
     });
 
-    if (selectedBooks.length > 0) {
+    if (Object.keys(selectedBooks).length > 0) {
         return res.send(JSON.stringify(selectedBooks, null, 4));
     } else {
-        return res.status(300).json({message: 'Unable to find books by this author'})
+        return res.status(300).json({message: `Unable to find any books by author named '${givenAuthor}'`})
     }
 });
 
