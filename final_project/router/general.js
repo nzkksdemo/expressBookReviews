@@ -32,12 +32,35 @@ const getAllBooks = () => new Promise((resolve, reject) => resolve(books));
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-    getAllBooks().then(books => res.send(JSON.stringify(books, null, 4)));
+    getAllBooks().then(result => res.status(200).send(JSON.stringify(result, null, 4)));
 });
 
+const getBookByIsbn = isbn => {
+    return new Promise((resolve, reject) => {
+        getAllBooks().then(result => {
+            const selectedBook = result[isbn];
+            if(selectedBook) {
+                resolve(selectedBook);
+            } else {
+                reject(`No book found with the isbn '${isbn}'`);
+            }
+        });
+    });
+}
+
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
-    return res.send(books[req.params.isbn]);
+public_users.get('/isbn/:isbn', function (req, res) {
+    const isbn = parseInt(req.params.isbn);
+    if (isbn) {
+        getBookByIsbn(isbn)
+        .then(
+            value => res.status(200).send(JSON.stringify(value, null, 4)),
+            reason => res.status(303).json({message: reason})
+        );
+    } else {
+        // to get below error message change the path above to '/isbn/:isbn?'
+        res.status(303).json({message: 'isbn is required'});
+    }
  });
   
 // Get book details based on author
